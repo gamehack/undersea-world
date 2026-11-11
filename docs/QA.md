@@ -3,7 +3,8 @@
 ## 预览环境
 
 - Cloudflare Pages 项目 `undersea-world`，GitHub 来源 `gamehack/undersea-world`，部署分支 `feat/mvp`，构建命令 `npm run build`，产物 `dist`，预览站点：<https://undersea-world.pages.dev/>。
-- 2026-11-12：项目和 GitHub 关联已建立；首次自动构建/公网访问仍需验证，未将“项目创建成功”记作“页面验收通过”。
+- 2026-11-12：项目和 GitHub 关联已建立，Cloudflare 的 `clone_repo`、`build` 和 `deploy` 阶段均返回 `success`，公网首页可访问；云端 Chrome 点击“进入海底”后，因无 WebGL 2 显示中文说明/静态珊瑚鱼群预览/“重试进入”按钮，兜底路径已观察到。
+- 尚未完成具备 WebGL 2 的真实 PC/手机场景、音频、10 分钟巡游与 FPS 验收，不能把静态首页可用等同为 3D 产品验收通过。
 - 此阶段保留 Draft PR，暂不切换 `main`、不绑定自定义域名。
 
 **更新日期：** 2026-11-11（北京时间）

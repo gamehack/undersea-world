@@ -8,10 +8,10 @@
 - **已实现的体验控制：** 暂停/继续、退出返回、默认静音并可开启的程序化水流音效、浏览器后台暂停与 WebGL 中断恢复提示；匿名事件仅在页面内部广播。
 - **舒适与自然表现：** 音量、缓慢模式、减少水中颗粒/光束、隐藏界面、初次操作提示；礁石/珊瑚简化碰撞和边界柔和引导。
 - **已实现的工程化：** GitHub Actions 单测/类型检查/构建；可手动触发 Playwright PC/移动端浏览器场景测试。
-- **待验收：** 真实 WebGL 2 设备的视觉、操作、声音和帧率测试；Cloudflare Pages 首次构建与浏览器实测待完成。
+- **待验收：** 真实 WebGL 2 设备的 3D 视觉、操作、声音和帧率测试；云端浏览器因不支持 WebGL 2，只能验收静态首页和兜底路径。
 - **已验证：** 以 `npm test`、`npm run build` 的实际执行结果为准，不把静态首页算作完整海洋体验。
 - **当前验证记录：** 2026-11-11，`npm test` 45/45 通过，`npm run typecheck` 与 `npm run build` 成功；当前环境的 Chromium 被操作系统权限限制，Playwright E2E 未通过启动阶段，真机验收待做。详见 `docs/QA.md`。
-- **预览配置已创建：** Cloudflare Pages 项目 `undersea-world` 已关联 GitHub；正式独立域名未绑定，主分支未合并。访问地址为 <https://undersea-world.pages.dev/>（首次部署完成后才可用）。
+- **预览已部署：** Cloudflare Pages 项目 `undersea-world` 已关联 GitHub，首次构建/部署成功；正式独立域名未绑定，主分支未合并。访问地址：<https://undersea-world.pages.dev/>。
 
 ## 本地运行
 
@@ -27,7 +27,7 @@ npm run dev
 ## Cloudflare Pages 预览部署
 
 - GitHub 仓库：`gamehack/undersea-world`，目前 MVP 功能在 `feat/mvp` 草稿 PR，未合并主分支。
-- Pages 项目：`undersea-world`；地址：<https://undersea-world.pages.dev/>（仅供 MVP 预览验收，无正式域名）。
+- Pages 项目：`undersea-world`；地址：<https://undersea-world.pages.dev/>（已可访问，仅供 MVP 预览验收，无正式域名）。
 - GitHub 集成的 Pages 生产分支**暂设 `feat/mvp`**，这样草稿 PR 的代码可以直接显示在 `pages.dev` 根地址；此设置只代表 Pages 的环境标签，不代表产品已正式上线。`main` 不触发 Pages 部署，待产品验收后再决定是否切换。
 - 框架：Vite；Cloudflare 构建命令：`npm run build`（Pages 会先自动安装依赖）；输出目录：`dist`；`.node-version` 固定 Node.js 24.22.1。
 - 前端静态单页，无数据库、Secret、后台服务器、付费资源或用户账号；未启用其他预览分支的自动构建以控制资源消耗。
