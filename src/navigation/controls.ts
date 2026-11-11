@@ -10,10 +10,8 @@ export class Controls {
   private vertical = 0;
   private yaw = 0;
   private pitch = 0;
-  private pointer: number | null = null;
-  private pointerMode: 'move' | 'look' = 'look';
-  private origin = { x: 0, y: 0 };
-  private last = { x: 0, y: 0 };
+  private movementPointer: { id: number; origin: { x: number; y: number } } | null = null;
+  private lookPointer: { id: number; last: { x: number; y: number } } | null = null;
   private hud: HTMLElement;
 
   constructor(private stage: HTMLElement) {
@@ -24,6 +22,7 @@ export class Controls {
     window.addEventListener('keydown', this.onKeyDown);
     window.addEventListener('keyup', this.onKeyUp);
     window.addEventListener('blur', this.onBlur);
+    document.addEventListener('visibilitychange', this.onVisibility);
     stage.addEventListener('pointerdown', this.onPointerDown);
     stage.addEventListener('pointermove', this.onPointerMove);
     stage.addEventListener('pointerup', this.onPointerUp);
@@ -38,7 +37,7 @@ export class Controls {
   getInput(): MotionInput {
     const result: MotionInput = {
       forward: bounded(Number(this.keys.has('KeyW') || this.keys.has('ArrowUp')) - Number(this.keys.has('KeyS') || this.keys.has('ArrowDown')) + this.forward),
-      strafe: bounded(Number(this.keys.has('KeyD')) - Number(this.keys.has('KeyA')) + this.strafe),
+      strafe: bounded(Number(this.keys.has('KeyD') || this.keys.has('ArrowRight')) - Number(this.keys.has('KeyA') || this.keys.has('ArrowLeft')) + this.strafe),
       vertical: bounded(Number(this.keys.has('Space')) - Number(this.keys.has('ShiftLeft') || this.keys.has('ShiftRight') || this.keys.has('KeyC')) + this.vertical),
       yaw: bounded(this.yaw), pitch: bounded(this.pitch),
     };
@@ -47,42 +46,53 @@ export class Controls {
   }
 
   private onKeyDown = (e: KeyboardEvent) => {
-    if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
-    if (['Space', 'ArrowUp', 'ArrowDown'].includes(e.code)) e.preventDefault();
+    if (e.target instanceof HTMLElement && e.target.closest('button,input,select,textarea,[contenteditable="true"]')) return;
+    if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
     this.keys.add(e.code);
   };
   private onKeyUp = (e: KeyboardEvent) => { this.keys.delete(e.code); };
   private onBlur = () => {
-    this.keys.clear(); this.forward = this.strafe = this.vertical = this.yaw = this.pitch = 0; this.pointer = null;
+    this.keys.clear(); this.forward = this.strafe = this.vertical = this.yaw = this.pitch = 0;
+    this.movementPointer = null;
+    this.lookPointer = null;
   };
+  private onVisibility = () => { if (document.hidden) this.onBlur(); };
   private onDepthDown = (e: PointerEvent) => {
     e.stopPropagation(); e.preventDefault();
     this.vertical = (e.currentTarget as HTMLElement).classList.contains('up') ? 1 : -1;
   };
   private onDepthUp = (e: PointerEvent) => { e.stopPropagation(); this.vertical = 0; };
   private onPointerDown = (e: PointerEvent) => {
-    if (this.pointer !== null || e.target instanceof HTMLButtonElement || e.target instanceof HTMLSelectElement) return;
+    if (e.target instanceof HTMLButtonElement || e.target instanceof HTMLSelectElement) return;
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     const rect = this.stage.getBoundingClientRect();
-    this.pointer = e.pointerId;
-    this.pointerMode = e.pointerType !== 'mouse' && e.clientX < rect.left + rect.width * 0.43 ? 'move' : 'look';
-    this.origin = this.last = { x: e.clientX, y: e.clientY };
+    const isMovement = e.pointerType !== 'mouse' && e.clientX < rect.left + rect.width * 0.43;
+    if (isMovement) {
+      if (this.movementPointer) return;
+      this.movementPointer = { id: e.pointerId, origin: { x: e.clientX, y: e.clientY } };
+    } else {
+      if (this.lookPointer) return;
+      this.lookPointer = { id: e.pointerId, last: { x: e.clientX, y: e.clientY } };
+    }
     this.stage.setPointerCapture?.(e.pointerId);
   };
   private onPointerMove = (e: PointerEvent) => {
-    if (e.pointerId !== this.pointer) return;
-    if (this.pointerMode === 'move') {
-      this.strafe = bounded((e.clientX - this.origin.x) / 42);
-      this.forward = bounded((this.origin.y - e.clientY) / 42);
-    } else {
-      this.yaw = bounded(this.yaw + (e.clientX - this.last.x) / 45);
-      this.pitch = bounded(this.pitch + (e.clientY - this.last.y) / 45);
+    if (e.pointerId === this.movementPointer?.id) {
+      this.strafe = bounded((e.clientX - this.movementPointer.origin.x) / 42);
+      this.forward = bounded((this.movementPointer.origin.y - e.clientY) / 42);
+    } else if (e.pointerId === this.lookPointer?.id) {
+      this.yaw = bounded(this.yaw + (e.clientX - this.lookPointer.last.x) / 45);
+      this.pitch = bounded(this.pitch + (e.clientY - this.lookPointer.last.y) / 45);
+      this.lookPointer.last = { x: e.clientX, y: e.clientY };
     }
-    this.last = { x: e.clientX, y: e.clientY };
   };
   private onPointerUp = (e: PointerEvent) => {
-    if (e.pointerId !== this.pointer) return;
-    this.pointer = null; this.forward = this.strafe = 0;
+    if (e.pointerId === this.movementPointer?.id) {
+      this.movementPointer = null;
+      this.forward = this.strafe = 0;
+    } else if (e.pointerId === this.lookPointer?.id) {
+      this.lookPointer = null;
+    } else return;
     if (this.stage.hasPointerCapture?.(e.pointerId)) this.stage.releasePointerCapture(e.pointerId);
   };
 
@@ -91,6 +101,7 @@ export class Controls {
     window.removeEventListener('keydown', this.onKeyDown);
     window.removeEventListener('keyup', this.onKeyUp);
     window.removeEventListener('blur', this.onBlur);
+    document.removeEventListener('visibilitychange', this.onVisibility);
     this.stage.removeEventListener('pointerdown', this.onPointerDown);
     this.stage.removeEventListener('pointermove', this.onPointerMove);
     this.stage.removeEventListener('pointerup', this.onPointerUp);

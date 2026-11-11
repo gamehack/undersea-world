@@ -26,6 +26,10 @@ export interface ShellElements {
   sound: HTMLButtonElement;
   quality: HTMLSelectElement;
   help: HTMLButtonElement;
+  performance: HTMLElement;
+  pause: HTMLButtonElement;
+  exit: HTMLButtonElement;
+  recover: HTMLButtonElement;
 }
 
 export function renderShell(root: HTMLElement): ShellElements {
@@ -39,6 +43,8 @@ export function renderShell(root: HTMLElement): ShellElements {
         <div class="brand"><span class="brand-mark" aria-hidden="true">◉</span><span>海底世界 <small>UNDERSEA WORLD</small></span></div>
         <div class="top-actions">
           <button id="help-button" class="glass-button" aria-label="查看操作帮助" type="button">帮助</button>
+          <button id="pause-button" class="glass-button" type="button" hidden>暂停</button>
+          <button id="exit-button" class="glass-button" type="button" hidden>退出</button>
           <button id="sound-button" class="glass-button" aria-pressed="false" type="button">声音：关闭</button>
           <label class="quality-label">画质
             <select id="quality-select" aria-label="画质选择"><option value="auto">自动</option><option value="low">低</option><option value="medium">中</option><option value="high">高</option></select>
@@ -56,6 +62,8 @@ export function renderShell(root: HTMLElement): ShellElements {
         <div class="intro-depth" aria-hidden="true"><span>3—18 M</span><small>热带珊瑚礁</small></div>
       </section>
       <div id="status-message" class="status-message" role="status" aria-live="polite"></div>
+      <button id="recover-button" class="recover-button" type="button" hidden>重新连接海底场景</button>
+      <output id="performance-status" class="performance-status" aria-label="实时渲染帧率" hidden></output>
       <footer class="footer"><span>轻量生态写实 · 自由探索</span><span>潜界 AI · 数字休闲空间</span></footer>
     </main>`;
 
@@ -72,5 +80,9 @@ export function renderShell(root: HTMLElement): ShellElements {
     sound: required<HTMLButtonElement>('#sound-button'),
     quality: required<HTMLSelectElement>('#quality-select'),
     help: required<HTMLButtonElement>('#help-button'),
+    performance: required<HTMLElement>('#performance-status'),
+    pause: required<HTMLButtonElement>('#pause-button'),
+    exit: required<HTMLButtonElement>('#exit-button'),
+    recover: required<HTMLButtonElement>('#recover-button'),
   };
 }

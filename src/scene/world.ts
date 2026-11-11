@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { createCoralCluster, seededRandom } from './coral';
+import { qualitySettings, type QualityTier } from '../performance/quality';
 
 export interface WorldBounds {
   width: number;
@@ -21,8 +22,9 @@ export function seabedHeightAt(x: number, z: number): number {
 }
 
 /** A single connected reef, with all geometry owned and disposed by the world. */
-export function createWorld(seed: number): WorldInstance {
+export function createWorld(seed: number, tier: QualityTier = 'medium'): WorldInstance {
   const rand = seededRandom(seed);
+  const settings = qualitySettings(tier);
   const group = new THREE.Group();
   group.name = 'reef-world';
 
@@ -40,7 +42,7 @@ export function createWorld(seed: number): WorldInstance {
   const rocks = new THREE.Group();
   rocks.name = 'reef-rocks';
   const rockMaterials = [0x365d5c, 0x4b6c69, 0x5e6d68].map(color => new THREE.MeshStandardMaterial({ color, roughness: 0.99 }));
-  for (let i = 0; i < 46; i++) {
+  for (let i = 0; i < Math.round(46 * settings.rockFraction); i++) {
     const x = (rand() - 0.5) * 55;
     const z = (rand() - 0.5) * 55;
     const size = 0.6 + rand() * 2.5;
@@ -54,7 +56,7 @@ export function createWorld(seed: number): WorldInstance {
 
   const corals = new THREE.Group();
   corals.name = 'coral-clusters';
-  for (let i = 0; i < 76; i++) {
+  for (let i = 0; i < Math.round(76 * settings.coralFraction); i++) {
     const x = (rand() - 0.5) * 52;
     const z = (rand() - 0.5) * 52;
     const coral = createCoralCluster(Math.floor(rand() * 1e7));

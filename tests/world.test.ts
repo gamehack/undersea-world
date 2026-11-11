@@ -29,6 +29,16 @@ describe('createWorld', () => {
     b.dispose();
   });
 
+  it('reduces procedural habitat density on lower quality tiers', () => {
+    const low = createWorld(42, 'low');
+    const medium = createWorld(42, 'medium');
+    const high = createWorld(42, 'high');
+    const density = (world: ReturnType<typeof createWorld>) => (world.group.getObjectByName('coral-clusters') as THREE.Group).children.length;
+    expect(density(low)).toBeLessThan(density(medium));
+    expect(density(medium)).toBeLessThan(density(high));
+    low.dispose(); medium.dispose(); high.dispose();
+  });
+
   it('releases GPU geometry when disposed', () => {
     const world = createWorld(1);
     const terrain = world.group.getObjectByName('reef-terrain') as THREE.Mesh;
