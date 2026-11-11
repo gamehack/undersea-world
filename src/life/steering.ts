@@ -1,3 +1,5 @@
+import type { ReefObstacle } from '../scene/world';
+
 export interface AgentState {
   x: number; y: number; z: number;
   vx: number; vy: number; vz: number;
@@ -11,7 +13,7 @@ const finite = (value: number, fallback = 0) => Number.isFinite(value) ? value :
 const clamp = (value: number, a: number, b: number) => Math.max(a, Math.min(b, value));
 
 /** Cheap, bounded steering. It favors local separation, gentle alignment and habitat safety. */
-export function updateSteering(agent: AgentState, neighbors: AgentState[], habitat: HabitatBounds, dt: number): AgentState {
+export function updateSteering(agent: AgentState, neighbors: AgentState[], habitat: HabitatBounds, dt: number, obstacles: readonly ReefObstacle[] = []): AgentState {
   if (!Number.isFinite(dt) || dt <= 0) return { ...agent };
   const step = Math.min(dt, 0.05);
   const x = finite(agent.x); const y = finite(agent.y, -7); const z = finite(agent.z);
@@ -34,9 +36,20 @@ export function updateSteering(agent: AgentState, neighbors: AgentState[], habit
   const boundaryX = x < habitat.minX + margin ? 1 : x > habitat.maxX - margin ? -1 : 0;
   const boundaryY = y < habitat.minY + 1.5 ? 1 : y > habitat.maxY - 1.5 ? -1 : 0;
   const boundaryZ = z < habitat.minZ + margin ? 1 : z > habitat.maxZ - margin ? -1 : 0;
-  let vx = clamp(finite(agent.vx) * 0.985 + (repelX * 2 + alignX * 0.05 + boundaryX * 2) * step, -1.75, 1.75);
+  let avoidX = 0, avoidZ = 0;
+  for (const obstacle of obstacles) {
+    if (y > obstacle.topY + 1.5 || obstacle.radius <= 0) continue;
+    const dx = x - obstacle.x, dz = z - obstacle.z;
+    const distance = Math.hypot(dx, dz);
+    const clearance = obstacle.radius + 1.8;
+    if (distance >= clearance) continue;
+    const weight = (clearance - distance) / clearance * 4.5;
+    avoidX += (distance > 0.0001 ? dx / distance : 1) * weight;
+    avoidZ += (distance > 0.0001 ? dz / distance : 0) * weight;
+  }
+  let vx = clamp(finite(agent.vx) * 0.985 + (repelX * 2 + alignX * 0.05 + boundaryX * 2 + avoidX) * step, -1.75, 1.75);
   const vy = clamp(finite(agent.vy) * 0.985 + (repelY * 2 + alignY * 0.05 + boundaryY * 1.2) * step, -0.65, 0.65);
-  let vz = clamp(finite(agent.vz) * 0.985 + (repelZ * 2 + alignZ * 0.05 + boundaryZ * 2) * step, -1.75, 1.75);
+  let vz = clamp(finite(agent.vz) * 0.985 + (repelZ * 2 + alignZ * 0.05 + boundaryZ * 2 + avoidZ) * step, -1.75, 1.75);
   // Without a sustained cruise drive, damping eventually freezes every school.
   // Preserve the steered direction while gradually restoring a gentle swim speed.
   const speed = Math.hypot(vx, vz);

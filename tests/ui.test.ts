@@ -12,6 +12,12 @@ describe('ocean UI', () => {
     expect(ui.pause.hidden).toBe(true);
     expect(ui.exit.hidden).toBe(true);
     expect(ui.recover.hidden).toBe(true);
+    expect(ui.volume.value).toBe('40');
+    expect(ui.slowMode.getAttribute('aria-pressed')).toBe('false');
+    expect(ui.effects.getAttribute('aria-pressed')).toBe('false');
+    expect(ui.hideHud).toBeInstanceOf(HTMLButtonElement);
+    expect(ui.showHud).toBeInstanceOf(HTMLButtonElement);
+    expect(ui.tutorial.hidden).toBe(true);
   });
 
   it('keeps unsupported visitors informed with text and a retry action', () => {

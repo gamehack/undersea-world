@@ -1,17 +1,23 @@
 export type EventName =
-  | 'ocean_enter' | 'ocean_exit' | 'ocean_pause' | 'ocean_resume'
-  | 'ocean_context_lost' | 'ocean_error' | 'ocean_3min' | 'ocean_10min'
-  | 'quality_changed' | 'sound_toggled';
+  | 'app_opened' | 'scene_load_started' | 'scene_load_succeeded' | 'scene_load_failed'
+  | 'experience_started' | 'experience_ended' | 'experience_paused' | 'experience_resumed'
+  | 'experience_3min' | 'experience_10min' | 'quality_changed' | 'render_recovered'
+  | 'context_lost' | 'render_performance' | 'sound_toggled';
 
 export type EventField = string | number | boolean;
 type Sink = (name: EventName, fields: Record<string, EventField>) => void;
 
 const eventNames: ReadonlySet<string> = new Set<EventName>([
-  'ocean_enter', 'ocean_exit', 'ocean_pause', 'ocean_resume',
-  'ocean_context_lost', 'ocean_error', 'ocean_3min', 'ocean_10min',
-  'quality_changed', 'sound_toggled',
+  'app_opened', 'scene_load_started', 'scene_load_succeeded', 'scene_load_failed',
+  'experience_started', 'experience_ended', 'experience_paused', 'experience_resumed',
+  'experience_3min', 'experience_10min', 'quality_changed', 'render_recovered',
+  'context_lost', 'render_performance', 'sound_toggled',
 ]);
-const keys: ReadonlySet<string> = new Set(['tier', 'source', 'duration_seconds', 'reason', 'enabled']);
+const keys: ReadonlySet<string> = new Set([
+  'device_class', 'referrer_group', 'quality_tier', 'load_duration_ms', 'error_category', 'stage',
+  'input_type', 'active_seconds', 'total_seconds', 'from', 'to', 'reason', 'cause', 'success',
+  'fps', 'slow_frame_rate', 'enabled',
+]);
 
 /** Anonymous event sink; no cookies, stable IDs, URLs, device fingerprints or network writes. */
 export class Telemetry {

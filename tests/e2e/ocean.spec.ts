@@ -30,7 +30,14 @@ test('enters the reef, pauses, resumes, changes quality and exits', async ({ pag
   test.skip(!(await enterIfSupported(page)), 'WebGL 2 unavailable in browser environment');
   await expect(page.getByRole('button', { name: '暂停' })).toBeVisible();
   await expect(page.getByRole('button', { name: '退出' })).toBeVisible();
+  await expect(page.locator('#tutorial-panel')).toBeVisible();
+  await page.getByRole('button', { name: '知道了，开始探索' }).click();
+  await page.getByText('设置', { exact: true }).click();
   await expect(page.getByRole('button', { name: '声音：关闭' })).toHaveAttribute('aria-pressed', 'false');
+  await page.getByLabel('环境音量').fill('30');
+  await page.getByRole('button', { name: '缓慢模式：关闭' }).click();
+  await expect(page.getByRole('button', { name: '缓慢模式：开启' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: '减少光束与颗粒：关闭' }).click();
   await page.getByRole('button', { name: '暂停' }).click();
   await expect(page.getByRole('button', { name: '继续' })).toBeVisible();
   await page.getByLabel('画质选择').selectOption('low');
@@ -39,6 +46,9 @@ test('enters the reef, pauses, resumes, changes quality and exits', async ({ pag
   await expect(page.locator('canvas.ocean-canvas')).toBeVisible();
   await page.getByRole('button', { name: '帮助' }).click();
   await expect(page.locator('#status-message')).toContainText('WASD');
+  await page.getByRole('button', { name: '隐藏界面' }).click();
+  await expect(page.getByRole('button', { name: '显示界面' })).toBeVisible();
+  await page.getByRole('button', { name: '显示界面' }).click();
   await page.getByRole('button', { name: '退出' }).click();
   await expect(page.getByRole('button', { name: '进入海底' })).toBeVisible();
 });

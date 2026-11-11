@@ -6,6 +6,7 @@
 | `src/scene/coral.ts` 生成几何 | 项目自制 | 可用于项目 | 程序化珊瑚，非真实物种模型 |
 | `src/scene/world.ts` 生成几何 | 项目自制 | 可用于项目 | 海床、岩石 |
 | `src/scene/water.ts` 着色与灯光配置 | 项目自制 | 可用于项目 | 使用 Three.js API |
+| `src/scene/water.ts` 水中颗粒 | 项目自制 | 可用于项目 | 程序化点几何及透明材质，无外部纹理 |
 | `src/life/creatures.ts` 生成几何 | 项目自制 | 可用于项目 | 34 条程序化鱼和 1 只海龟，无第三方模型 |
 | `src/platform/audio.ts` 生成声音 | 项目自制 | 可用于项目 | Web Audio 实时生成循环水流氛围，无外部音频样本 |
 

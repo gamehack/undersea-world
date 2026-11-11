@@ -6,16 +6,21 @@
 
 | 事件名 | 触发条件 | 允许字段 |
 |---|---|---|
-| `ocean_enter` | 成功创建海洋场景 | `tier`, `source` |
-| `ocean_exit` | 用户退出或卸载页面 | `duration_seconds` |
-| `ocean_pause` / `ocean_resume` | 用户手动暂停/继续 | `source` |
-| `ocean_context_lost` | WebGL 上下文丢失 | `reason` |
-| `ocean_error` | 场景初始化失败 | `reason` |
-| `ocean_3min` / `ocean_10min` | 累计活跃时长首次达到 180/600 秒 | `duration_seconds` |
-| `quality_changed` | 切换画质 | `tier` |
+| `app_opened` | 首页应用完成初始化 | `device_class`, `referrer_group` |
+| `scene_load_started` | 开始初始化 3D | `quality_tier` |
+| `scene_load_succeeded` | 场景创建成功 | `quality_tier`, `load_duration_ms` |
+| `scene_load_failed` | WebGL 不支持或初始化失败 | `error_category`, `stage` |
+| `experience_started` | 首次进入可潜游场景 | `input_type` |
+| `experience_ended` | 用户退出或页面卸载 | `active_seconds`, `total_seconds` |
+| `experience_paused` / `experience_resumed` | 用户手动暂停/继续 | `reason` |
+| `context_lost` | WebGL 上下文丢失 | `cause` |
+| `render_recovered` | WebGL 自动恢复或手动重试 | `cause`, `success` |
+| `experience_3min` / `experience_10min` | 累计活跃时长首次达到 180/600 秒 | `active_seconds` |
+| `quality_changed` | 用户手动或运行时自动降档 | `from`, `to`, `reason` |
+| `render_performance` | 场景渲染期间每 2.5 秒发布一次最近帧率统计 | `fps`, `slow_frame_rate`, `device_class` |
 | `sound_toggled` | 改变环境声音 | `enabled` |
 
-允许字段仅限 `tier`、`source`、`duration_seconds`、`reason`、`enabled`，长字符串、含非法字符、非有限数字会丢弃。事件接收方异常不能中断渲染。未来如果接入 GA4 等服务，需要单独评审数据发送、隐私告知、同意与保留期限。
+事件对齐已批准设计规格第 9.1 节。`device_class` 仅为粗略的 mobile/desktop，`referrer_group` 仅为 direct/search/social/other，绝不发送原始 Referer 或完整 URL。仅允许上表列出的字段，长字符串、含非法字符、非有限数字会丢弃。事件接收方异常不能中断渲染。当前页面内分发不等于持久化测量，仍无法据此得出真实进入成功率。未来接入 GA4 等服务，需要单独评审数据发送、隐私告知、同意与保留期限。
 
 ## 时长定义
 

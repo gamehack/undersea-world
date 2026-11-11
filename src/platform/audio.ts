@@ -4,8 +4,17 @@ export class OceanAudio {
   private gain?: GainNode;
   private source?: AudioBufferSourceNode;
   private enabled = false;
+  private volume = 0.4;
 
   get isEnabled(): boolean { return this.enabled; }
+  get currentVolume(): number { return this.volume; }
+
+  setVolume(value: number): void {
+    this.volume = Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : 0.4;
+    if (this.context && this.gain && this.enabled) {
+      this.gain.gain.setTargetAtTime(0.085 * this.volume, this.context.currentTime, 0.15);
+    }
+  }
 
   async setEnabled(enabled: boolean): Promise<boolean> {
     if (!enabled) {
@@ -16,7 +25,7 @@ export class OceanAudio {
     try {
       if (!this.context) this.initialize();
       await this.context!.resume();
-      this.gain!.gain.setTargetAtTime(0.085, this.context!.currentTime, 0.2);
+      this.gain!.gain.setTargetAtTime(0.085 * this.volume, this.context!.currentTime, 0.2);
       this.enabled = true;
       return true;
     } catch {

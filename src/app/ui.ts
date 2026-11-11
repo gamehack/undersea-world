@@ -30,6 +30,13 @@ export interface ShellElements {
   pause: HTMLButtonElement;
   exit: HTMLButtonElement;
   recover: HTMLButtonElement;
+  volume: HTMLInputElement;
+  slowMode: HTMLButtonElement;
+  effects: HTMLButtonElement;
+  hideHud: HTMLButtonElement;
+  showHud: HTMLButtonElement;
+  tutorial: HTMLElement;
+  dismissTutorial: HTMLButtonElement;
 }
 
 export function renderShell(root: HTMLElement): ShellElements {
@@ -45,10 +52,18 @@ export function renderShell(root: HTMLElement): ShellElements {
           <button id="help-button" class="glass-button" aria-label="查看操作帮助" type="button">帮助</button>
           <button id="pause-button" class="glass-button" type="button" hidden>暂停</button>
           <button id="exit-button" class="glass-button" type="button" hidden>退出</button>
-          <button id="sound-button" class="glass-button" aria-pressed="false" type="button">声音：关闭</button>
-          <label class="quality-label">画质
-            <select id="quality-select" aria-label="画质选择"><option value="auto">自动</option><option value="low">低</option><option value="medium">中</option><option value="high">高</option></select>
-          </label>
+          <details class="settings-menu"><summary class="glass-button">设置</summary>
+            <div class="settings-panel">
+              <button id="sound-button" class="glass-button" aria-pressed="false" type="button">声音：关闭</button>
+              <label class="settings-field">音量 <input id="volume-slider" type="range" min="0" max="100" value="40" aria-label="环境音量"></label>
+              <label class="settings-field">画质
+                <select id="quality-select" aria-label="画质选择"><option value="auto">自动</option><option value="low">低</option><option value="medium">中</option><option value="high">高</option></select>
+              </label>
+              <button id="slow-mode-button" class="glass-button" type="button" aria-pressed="false">缓慢模式：关闭</button>
+              <button id="effects-button" class="glass-button" type="button" aria-pressed="false">减少光束与颗粒：关闭</button>
+              <button id="hide-hud-button" class="glass-button" type="button">隐藏界面</button>
+            </div>
+          </details>
         </div>
       </header>
       <section id="intro-overlay" class="intro-overlay" aria-labelledby="intro-title">
@@ -63,6 +78,12 @@ export function renderShell(root: HTMLElement): ShellElements {
       </section>
       <div id="status-message" class="status-message" role="status" aria-live="polite"></div>
       <button id="recover-button" class="recover-button" type="button" hidden>重新连接海底场景</button>
+      <button id="show-ui-button" class="show-ui-button" type="button">显示界面</button>
+      <aside id="tutorial-panel" class="tutorial-panel" hidden aria-label="初次潜游操作提示">
+        <strong>欢迎来到珊瑚礁</strong>
+        <p>电脑使用 WASD 和鼠标拖动；手机双手同时操作：左边游动，右边观察。空格/右侧按钮上浮，Shift/C/下潜按钮下降。</p>
+        <button id="dismiss-tutorial" type="button">知道了，开始探索</button>
+      </aside>
       <output id="performance-status" class="performance-status" aria-label="实时渲染帧率" hidden></output>
       <footer class="footer"><span>轻量生态写实 · 自由探索</span><span>潜界 AI · 数字休闲空间</span></footer>
     </main>`;
@@ -84,5 +105,12 @@ export function renderShell(root: HTMLElement): ShellElements {
     pause: required<HTMLButtonElement>('#pause-button'),
     exit: required<HTMLButtonElement>('#exit-button'),
     recover: required<HTMLButtonElement>('#recover-button'),
+    volume: required<HTMLInputElement>('#volume-slider'),
+    slowMode: required<HTMLButtonElement>('#slow-mode-button'),
+    effects: required<HTMLButtonElement>('#effects-button'),
+    hideHud: required<HTMLButtonElement>('#hide-hud-button'),
+    showHud: required<HTMLButtonElement>('#show-ui-button'),
+    tutorial: required<HTMLElement>('#tutorial-panel'),
+    dismissTutorial: required<HTMLButtonElement>('#dismiss-tutorial'),
   };
 }

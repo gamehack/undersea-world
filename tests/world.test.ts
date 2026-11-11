@@ -13,6 +13,8 @@ describe('createWorld', () => {
     expect(world.bounds.minY).toBeLessThan(world.bounds.maxY);
     expect([world.bounds.minY, world.bounds.maxY]).toEqual(expect.arrayContaining([expect.any(Number), expect.any(Number)]));
     expect(Number.isFinite(world.bounds.width)).toBe(true);
+    expect(world.obstacles.length).toBeGreaterThan(46);
+    expect(world.obstacles.every(obstacle => obstacle.radius > 0 && Number.isFinite(obstacle.topY))).toBe(true);
     world.dispose();
   });
 

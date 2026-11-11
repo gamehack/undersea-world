@@ -39,6 +39,14 @@ describe('updateSteering', () => {
     expect(distance).toBeGreaterThan(12);
     expect(Math.hypot(current.vx, current.vz)).toBeGreaterThan(0.2);
   });
+
+  it('turns away from a nearby shallow rock obstacle', () => {
+    const swimming = { ...agent, x: 0, y: -7, z: 0, vx: 0.1, vz: -0.5 };
+    const rock = { x: 1, z: 0, radius: 1.1, topY: -6 };
+    const next = updateSteering(swimming, [], habitat, 0.05, [rock]);
+    expect(next.vx).toBeLessThan(swimming.vx);
+    expect(Object.values(next).every(Number.isFinite)).toBe(true);
+  });
 });
 
 describe('marine life', () => {

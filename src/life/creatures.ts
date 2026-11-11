@@ -3,6 +3,7 @@ import { seededRandom } from '../scene/coral';
 import { REEF_FISH, type SpeciesProfile } from './species';
 import { updateSteering, type AgentState, type HabitatBounds } from './steering';
 import { qualitySettings, type QualityTier } from '../performance/quality';
+import type { ReefObstacle } from '../scene/world';
 
 interface Swimmer { mesh: THREE.Group; state: AgentState; profile: SpeciesProfile; phase: number; }
 
@@ -62,7 +63,7 @@ export interface MarineLife {
   countBySpecies(): Record<string, number>;
 }
 
-export function createMarineLife(world: THREE.Group, seed: number, tier: QualityTier = 'medium'): MarineLife {
+export function createMarineLife(world: THREE.Group, seed: number, tier: QualityTier = 'medium', obstacles: readonly ReefObstacle[] = []): MarineLife {
   const rand = seededRandom(seed);
   const settings = qualitySettings(tier);
   const container = new THREE.Group(); container.name = 'marine-life'; world.add(container);
@@ -109,7 +110,7 @@ export function createMarineLife(world: THREE.Group, seed: number, tier: Quality
         const { mesh, profile } = swimmer;
         if ((i + frame) % 2 === 0) {
           const neighbors = swimmers.filter(other => other !== swimmer && other.profile.id === profile.id).map(other => other.state);
-          swimmer.state = updateSteering(swimmer.state, neighbors, habitats.get(profile.id)!, step);
+          swimmer.state = updateSteering(swimmer.state, neighbors, habitats.get(profile.id)!, step, obstacles);
           const state = swimmer.state;
           mesh.position.set(state.x, state.y, state.z);
           if (Math.hypot(state.vx, state.vz) > 0.08) mesh.rotation.y = Math.atan2(state.vx, state.vz);

@@ -1,9 +1,16 @@
 import * as THREE from 'three';
+import { seededRandom } from './coral';
 
 type WaterTier = 'low' | 'medium' | 'high';
 
+export interface WaterAtmosphere {
+  update(seconds: number): void;
+  setReduced(reduced: boolean): void;
+  dispose(): void;
+}
+
 /** Water mood without expensive volumetric simulation or postprocessing. */
-export function createWaterAtmosphere(scene: THREE.Scene, quality: WaterTier): () => void {
+export function createWaterAtmosphere(scene: THREE.Scene, quality: WaterTier): WaterAtmosphere {
   const formerFog = scene.fog;
   const formerBackground = scene.background;
   scene.background = new THREE.Color(0x0d5267);
@@ -35,13 +42,39 @@ export function createWaterAtmosphere(scene: THREE.Scene, quality: WaterTier): (
   }
   scene.add(rays);
 
-  return () => {
+  const random = seededRandom(8121);
+  const particleCount = quality === 'low' ? 12 : quality === 'medium' ? 42 : 72;
+  const pointPositions = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount; i++) {
+    pointPositions[i * 3] = (random() - 0.5) * 48;
+    pointPositions[i * 3 + 1] = -12 + random() * 11;
+    pointPositions[i * 3 + 2] = (random() - 0.5) * 48;
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(pointPositions, 3));
+  const pointsMaterial = new THREE.PointsMaterial({ color: 0xb8e9e5, size: 0.11, sizeAttenuation: true, opacity: 0.21, transparent: true, depthWrite: false });
+  const particles = new THREE.Points(geometry, pointsMaterial);
+  particles.name = 'water-particles';
+  scene.add(particles);
+  let elapsed = 0;
+
+  return {
+    update(seconds) {
+      if (Number.isFinite(seconds) && seconds > 0) elapsed += Math.min(seconds, 0.05);
+      particles.position.y = Math.sin(elapsed * 0.25) * 0.22;
+      particles.position.x = Math.sin(elapsed * 0.09) * 0.12;
+    },
+    setReduced(reduced) { rays.visible = particles.visible = !reduced; },
+    dispose() {
     scene.fog = formerFog;
     scene.background = formerBackground;
-    scene.remove(sun, ambient, waterSurface, rays);
+    scene.remove(sun, ambient, waterSurface, rays, particles);
     waterSurface.geometry.dispose();
     (waterSurface.material as THREE.Material).dispose();
     for (const node of rays.children) if (node instanceof THREE.Mesh) node.geometry.dispose();
     rayMaterial.dispose();
+    particles.geometry.dispose();
+    pointsMaterial.dispose();
+    },
   };
 }

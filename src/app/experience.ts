@@ -14,6 +14,8 @@ export interface ReefExperience {
   getPerformance(): { fps: number; slowFrameRate: number };
   pause(): void;
   resume(): void;
+  setSlowMode(enabled: boolean): void;
+  setReducedEffects(enabled: boolean): void;
   dispose(): void;
 }
 
@@ -39,8 +41,8 @@ export function mountReefExperience(stage: HTMLElement, tier: QualityTier = 'med
   const scene = new THREE.Scene();
   const world = createWorld(20261111, tier);
   scene.add(world.group);
-  const marineLife = createMarineLife(world.group, 20261111, tier);
-  const disposeAtmosphere = createWaterAtmosphere(scene, tier);
+  const marineLife = createMarineLife(world.group, 20261111, tier, world.obstacles);
+  const atmosphere = createWaterAtmosphere(scene, tier);
   const camera = createInitialCamera(width / height);
   const controls = new Controls(stage);
   let motion = { ...initialMotion };
@@ -49,6 +51,8 @@ export function mountReefExperience(stage: HTMLElement, tier: QualityTier = 'med
   let frameId = 0;
   let disposed = false;
   let running = true;
+  let reducedEffects = false;
+  let slowMode = false;
 
   const resize = () => {
     if (disposed) return;
@@ -65,8 +69,9 @@ export function mountReefExperience(stage: HTMLElement, tier: QualityTier = 'med
     const elapsed = clock.getDelta();
     const { simulationSeconds: seconds, activeSeconds } = frameTiming(elapsed);
     frameStats.pushFrame(elapsed * 1000);
-    motion = advanceMotion(motion, controls.getInput(), seconds, world.bounds);
+    motion = advanceMotion(motion, controls.getInput(), seconds, world.bounds, slowMode ? 0.45 : 1, world.obstacles);
     marineLife.update(seconds);
+    if (!reducedEffects) atmosphere.update(seconds);
     camera.position.set(motion.x, motion.y, motion.z);
     camera.rotation.order = 'YXZ';
     camera.rotation.set(motion.pitch, motion.yaw, 0);
@@ -102,6 +107,8 @@ export function mountReefExperience(stage: HTMLElement, tier: QualityTier = 'med
     getPerformance: () => frameStats.summary(),
     pause,
     resume,
+    setSlowMode(enabled) { slowMode = enabled; },
+    setReducedEffects(enabled) { reducedEffects = enabled; atmosphere.setReduced(enabled); },
     dispose() {
       disposed = true;
       running = false;
@@ -110,7 +117,7 @@ export function mountReefExperience(stage: HTMLElement, tier: QualityTier = 'med
       renderer.domElement.removeEventListener('webglcontextlost', contextLost);
       renderer.domElement.removeEventListener('webglcontextrestored', contextRestored);
       controls.dispose();
-      disposeAtmosphere();
+      atmosphere.dispose();
       scene.remove(world.group);
       marineLife.dispose();
       world.dispose();
