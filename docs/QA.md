@@ -1,0 +1,44 @@
+# MVP 验收记录
+
+## 预览环境
+
+- Cloudflare Pages 项目 `undersea-world`，GitHub 来源 `gamehack/undersea-world`，部署分支 `feat/mvp`，构建命令 `npm run build`，产物 `dist`，预览站点：<https://undersea-world.pages.dev/>。
+- 2026-11-12：项目和 GitHub 关联已建立，Cloudflare 的 `clone_repo`、`build` 和 `deploy` 阶段均返回 `success`，公网首页可访问；云端 Chrome 点击“进入海底”后，因无 WebGL 2 显示中文说明/静态珊瑚鱼群预览/“重试进入”按钮，兜底路径已观察到。
+- 尚未完成具备 WebGL 2 的真实 PC/手机场景、音频、10 分钟巡游与 FPS 验收，不能把静态首页可用等同为 3D 产品验收通过。
+- 此阶段保留 Draft PR，暂不切换 `main`、不绑定自定义域名。
+
+**更新日期：** 2026-11-11（北京时间）
+
+## 自动化验收
+
+| 验收项 | 覆盖范围 | 状态 |
+|---|---|---|
+| 单元测试 | WebGL 能力检测、世界生成/碰撞、长期巡游、双触点、缓慢模式、帧率无关的拖动转向、画质、生命周期、音量边界、匿名事件契约、UI 兜底、水中粒子 | 本地 45/45 通过（以最新 CI 为准） |
+| TypeScript 检查 | `npm run typecheck` | 本地通过 |
+| Vite 构建 | `npm run build` | 本地通过 |
+| Playwright E2E 用例 | PC 和触屏、WebGL 不支持、进入/退出/画质/帮助/暂停、前后台、WebGL 失联 | 用例已编写，可枚举；浏览器环境未跑通 |
+| 资源许可 | SVG、程序化三维网格、自生成音效 | 未使用第三方海洋素材 |
+
+## 浏览器执行限制
+
+- 本地 Playwright 使用 `/usr/bin/chromium` 启动时，Chromium 在 `process_singleton_posix.cc` 阶段因 `socket() failed: Operation not permitted (1)` 退出。测试在创建页面前失败，因此**不能据此判定产品画面或交互失败**；也**不能声称 E2E 已通过**。
+- GitHub Actions 中仅 `workflow_dispatch` 启动完整浏览器 smoke 测试以控制分钟与下载成本；主分支推送和针对主分支的 PR 执行单测/类型检查/构建，避免特性分支推送与 PR 事件重复触发。
+- E2E 对无 WebGL 2 环境的体验类测试使用明确 skip，兜底测试仍然执行；验收需要有 WebGL 2 的设备。
+
+## 真机验收矩阵（尚未实测）
+
+| 设备/浏览器 | 首屏 | 3D 进入 | 触控/键鼠 | 画质切换 | 退出与恢复 | 帧率 |
+|---|---|---|---|---|---|---|
+| Android Chrome | 未测 | 未测 | 未测 | 未测 | 未测 | 未测 |
+| iPhone Safari | 未测 | 未测 | 未测 | 未测 | 未测 | 未测 |
+| Windows Chrome/Edge | 未测 | 未测 | 未测 | 未测 | 未测 | 未测 |
+| macOS Chrome/Safari | 未测 | 未测 | 未测 | 未测 | 未测 | 未测 |
+
+## 发布前人工检查
+
+1. 使用 Cloudflare Pages 预览地址在真实手机和 PC 上打开；排查控制栏遮挡、加载失败、画质、方向和触屏问题。
+2. 连续体验 3–10 分钟，观察发热、掉帧、内存增长、帧率和画面是否明显不符合生态观感。
+3. 切换标签、锁屏/恢复、切画质、手动退出与重新进入，确认声音停止、帧率正常、无资源泄漏。
+4. 通过移动端报告至少一轮截图/实际 FPS；性能目标见 `docs/PERFORMANCE.md`。
+
+在满足上述条件前，发布状态必须保持“候选版 / 待视觉验收”。
