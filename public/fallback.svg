@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" role="img" aria-labelledby="title">
+  <title id="title">海底珊瑚礁静态预览</title>
+  <defs><linearGradient id="water" x2="0" y2="1"><stop stop-color="#327f96"/><stop offset="1" stop-color="#05263b"/></linearGradient><linearGradient id="floor" x2="0" y2="1"><stop stop-color="#32696b"/><stop offset="1" stop-color="#12383b"/></linearGradient></defs>
+  <rect width="900" height="500" fill="url(#water)"/>
+  <path d="M110 0L300 0 420 500H290ZM450 0h55l190 500H575Z" fill="#e5faff" opacity=".055"/>
+  <path d="M0 425Q110 385 218 435T440 430T680 423T900 435V500H0Z" fill="url(#floor)"/>
+  <g stroke="#5ba6a0" fill="none" stroke-linecap="round" opacity=".75"><path d="M153 448q-17-100-50-140m50 138q32-97 80-122m-80 124q-6-84 14-168" stroke-width="13"/><path d="M715 442q-20-106-60-132m60 132q45-125 80-162m-80 160q-4-88 28-142" stroke-width="16"/></g>
+  <g fill="#b7e1dc"><path d="M330 190q35-22 74 0l20-15v30l-20-15q-40 24-74 0Z"/><circle cx="344" cy="185" r="3" fill="#164354"/><path d="M510 265q28-17 58 0l17-13v26l-17-13q-30 19-58 0Z" opacity=".75"/><path d="M620 150q20-13 43 0l11-10v20l-11-10q-22 13-43 0Z" opacity=".65"/></g>
+  <g fill="#a5e4e6" opacity=".35"><circle cx="250" cy="80" r="3"/><circle cx="690" cy="82" r="2"/><circle cx="410" cy="346" r="3"/><circle cx="760" cy="240" r="2"/></g>
+</svg>
