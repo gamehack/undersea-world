@@ -16,7 +16,8 @@
 | --- | --- | --- |
 | Tasks 1–6: shell, water and reef, controls, wildlife, quality, lifecycle | Implemented, including P0 review fixes, optional comfort controls, and frame-rate-independent look input | 45/45 Vitest tests, TypeScript typecheck, and Vite production build passed locally |
 | Task 7: browser E2E and documentation | Playwright desktop/mobile scenarios, CI workflows, QA matrix, asset/license and deployment notes implemented | Browser E2E **not executed successfully**: Chromium cannot open a local socket in this environment; real WebGL 2 browser and phone QA required |
-| GitHub delivery | Branch `feat/mvp` and Draft PR; code and docs evolve together | Keep PR Draft and production unpublished until browser/device QA and Cloudflare Pages integration choice |
+| GitHub delivery | Branch `feat/mvp` and Draft PR; code and docs evolve together | Keep PR Draft and official production domain unpublished until browser/device QA |
+| Cloudflare preview (2026-11-12) | Pages project `undersea-world` linked to `gamehack/undersea-world`, deploying `feat/mvp` on the public `pages.dev` preview address | Initial build and WebGL 2 browser verification pending; no custom domain, `main` unchanged |
 | Analytics | Local anonymous DOM event contract implemented and tested | External reporting intentionally disconnected until domain, notice, and analytics service are approved |
 
 The task checkboxes below describe original TDD instructions; the table above is the authoritative progress ledger. Passing unit/build checks does **not** signify final visual/performance acceptance.

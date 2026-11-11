@@ -1,5 +1,11 @@
 # MVP 验收记录
 
+## 预览环境
+
+- Cloudflare Pages 项目 `undersea-world`，GitHub 来源 `gamehack/undersea-world`，部署分支 `feat/mvp`，构建命令 `npm run build`，产物 `dist`，预览站点：<https://undersea-world.pages.dev/>。
+- 2026-11-12：项目和 GitHub 关联已建立；首次自动构建/公网访问仍需验证，未将“项目创建成功”记作“页面验收通过”。
+- 此阶段保留 Draft PR，暂不切换 `main`、不绑定自定义域名。
+
 **更新日期：** 2026-11-11（北京时间）
 
 ## 自动化验收
